@@ -1,0 +1,6 @@
+datasets==2.13.1
+sentence-transformers==2.2.2
+adapter-transformers==3.2.1
+setfit==0.7.0
+scikit-learn==1.2.2
+accelerate==0.20.3
