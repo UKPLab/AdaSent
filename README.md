@@ -141,9 +141,15 @@ python scripts/SetFit/train_setfit_with_self_training.py \
 
 ## Citation
 Please use the following citation:
-
-```
-TODO
+```bibtex
+@article{huang2023adasent,
+ title={AdaSent: Efficient Domain-Adapted Sentence Embeddings for Few-Shot Classification}, 
+ author={Yongxin Huang and Kexin Wang and Sourav Dutta and Raj Nath Patel and Goran Glavaš and Iryna Gurevych},
+ journal = {ArXiv preprint},
+ url = {https://arxiv.org/abs/2311.00408},
+ volume = {abs/2311.00408},
+ year={2023},
+}
 ```
 
 Contact person: Yongxin Huang, firstname.lastname@tu-darmstadt.de
