@@ -29,7 +29,7 @@ AdaSent is an approach to creating domain-specialized sentence encoders for few-
 The script [`example.sh`](example.sh) provides an example to train domain-adapted sentence embeddings and use them for few-shot classification with AdaSent, including three part of training: DAPT, SEPT and SetFit. The classification task in the example is [`mteb/amazon_massive_scenario`](https://huggingface.co/datasets/mteb/amazon_massive_scenario). The script should be run from the project root.  
 To train AdaSent, you need to prepare（1）a `.txt` file containing unlabeled examples (one example per line) for DAPT, (2) a `.csv` file with labeled training data and a `.csv` file with evaluation data for the few-shot classification task, and fill in the paths in the script.   
 For the example task, you can create these data files with the following code:
-```
+```python
 import pandas as pd
 from datasets import load_dataset
 from setfit import sample_dataset
@@ -65,7 +65,7 @@ The following provides explanations of each part of training: DAPT, SEPT and Set
 ### Domain-Adaptive Pre-Training (DAPT)
 First, we need to train a domain-adapted PLM. The following command trains a `DistilRoBERTa` model on task-specific unlabeled data with MLM (The `--model_name_or_path` can be other local or Hugging Face model path).:
 
-```
+```bash
 python scripts/DAPT/train_mlm.py \
     --train_file data/DAPT/amazon_massive_scenario.txt \
     --model_name_or_path distilroberta-base \
