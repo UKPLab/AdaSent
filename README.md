@@ -1,6 +1,6 @@
 # AdaSent: Efficient Domain-Adapted Sentence Embeddings for Few-Shot Classification
 
-AdaSent is an approach to creating domain-specialized sentence encoders for few-shot sentence classification. It combines Domain-Adaptive Pre-training (DAPT) and Sentence Embedding Pre-Training (SEPT) in a modular fashion. First, it does DAPT on a base pre-trained language model (PLM). Separately, an adapter is trained through general-domain SEPT on the same PLM. The adapter stores the sentence-specialization abilities and can be plugged into domain-adapted PLMs from various domains to make them domain-specialized sentence encoders, on which [SetFit](https://github.com/huggingface/setfit) is carried out to do downstream few-shot classification training. 
+AdaSent is an approach to creating domain-specialized sentence encoders for few-shot sentence classification. It combines Domain-Adaptive Pre-training (DAPT) and Sentence Embedding Pre-Training (SEPT) in a modular fashion. First, it does DAPT on a base pre-trained language model (PLM). Separately, an adapter is trained through general-domain SEPT on the same PLM. The adapter stores the sentence-specialization abilities and can be plugged into domain-adapted PLMs from various domains to make them domain-specialized sentence encoders, on which [SetFit](https://github.com/huggingface/setfit) is carried out to do downstream few-shot classification training.   
 
 ## Project structure
 ```
@@ -25,10 +25,17 @@ AdaSent is an approach to creating domain-specialized sentence encoders for few-
     ```
 
 ## Train AdaSent
-### An Example
-The script [`example.sh`](example.sh) provides an example to train domain-adapted sentence embeddings and use them for few-shot classification with AdaSent, including three part of training: DAPT, SEPT and SetFit. The classification task in the example is [`mteb/amazon_massive_scenario`](https://huggingface.co/datasets/mteb/amazon_massive_scenario). The script should be run from the project root.  
-To train AdaSent, you need to prepare（1）a `.txt` file containing unlabeled examples (one example per line) for DAPT, (2) a `.csv` file with labeled training data and a `.csv` file with evaluation data for the few-shot classification task, and fill in the paths in the script.   
-For the example task, you can create these data files with the following code:
+AdaSent consists of three part of training: DAPT, SEPT and SetFit. The following provides explanations for each of them. 
+
+An example script including all three parts can be found [here](example.sh). The script should be run from the project root. 
+
+### Data Preparation
+ 
+To train AdaSent, you need to prepare
+- A `.txt` file containing unlabeled examples (one example per line) for DAPT  
+- A `.csv` file with labeled training data and a `.csv` file with evaluation data for the few-shot classification task, and fill in the paths in the script.   
+
+Take the task [`mteb/amazon_massive_scenario`](https://huggingface.co/datasets/mteb/amazon_massive_scenario) for example, you can create these data files with the following code:
 ```python
 import pandas as pd
 from datasets import load_dataset
@@ -59,11 +66,9 @@ df.to_csv(labeled_train_file)
 df = pd.DataFrame({'text': eval_dataset['text'], 'label': eval_dataset['label']})
 df.to_csv(eval_file)
 ``` 
-
-The following provides explanations of each part of training: DAPT, SEPT and SetFit.  
  
 ### Domain-Adaptive Pre-Training (DAPT)
-First, we need to train a domain-adapted PLM. The following command trains a `DistilRoBERTa` model on task-specific unlabeled data with MLM (The `--model_name_or_path` can be other local or Hugging Face model path).:
+First, we need to train a domain-adapted PLM. The following command trains a `DistilRoBERTa` model on task-specific unlabeled data with MLM (The `--model_name_or_path` can be other local or Hugging Face model path):
 
 ```bash
 python scripts/DAPT/train_mlm.py \
@@ -83,7 +88,7 @@ We train a SEPT adapter on the same base PLM (`DistilRoBERTa` in our case) as in
 In our work, we found that SEPT with the three datasets `AllNLI`, `Sentence compression` and `Stackexchange duplicate question` (see the datasets' information [here](https://www.sbert.net/examples/training/paraphrases/README.html)) can best improve downstream few-shot classification tasks. 
 
 The following command trains an SEPT adapter on an unadapted `DistilRoBERTa` model and saves the adapter at `--model_save_path`. The above-mentioned datasets will be automatically downloaded. More information about the parameters can be found in the script [`train_sept`](scripts/SEPT/train_sept.py): 
-```
+```bash
 python scripts/SEPT/train_sept.py \
     --model_name_or_path distilroberta-base \
     --use_adapter True \
@@ -102,7 +107,7 @@ python scripts/SEPT/train_sept.py \
 ### SetFit
 After the DAPT-ed PLM and the SEPT-ed adapter are trained, we assemble them together and train a [SetFit](https://github.com/huggingface/setfit) model with 8 shots per class. Here, you need to specify the paths to the train and evalutaion `.csv` files in `--train_dataset_path` and `--eval_dataset_path` respectively 
 :
-```
+```bash
 python scripts/SetFit/train_setfit.py \
     --model_name_or_path models/distilroberta-base_dapt_amazon_massive_scenario \
     --adapter_path models/distilroberta-base_sept_adapter \
@@ -123,7 +128,7 @@ The `--model_name_or_path` should be the path of the DAPT-ed PLM, and the `--ada
 #### Semi-supervised SetFit
 The unlabeled data used in DAPT can also be used for self-training in SetFit and further improve the result. First, we use SetFit model body (DAPT-Transformer + SEPT-adapter in our case) trained on few-shot labeled data to encode both the labeled and unlabeled data. Then we run self-training with the encoded data with the [`SelfTrainingClassifier`](https://scikit-learn.org/stable/modules/generated/sklearn.semi_supervised.SelfTrainingClassifier.html) from scikit-learn.   
 Run the following command to do self-training with the unlabeled data at `--unlabeled_file_path`, here we use the same file as in DAPT:
-```
+```bash
 python scripts/SetFit/train_setfit_with_self_training.py \
     --model_name_or_path models/distilroberta-base_dapt_amazon_massive_scenario \
     --adapter_path models/distilroberta-base_sept_adapter \
@@ -138,6 +143,22 @@ python scripts/SetFit/train_setfit_with_self_training.py \
     --text_col text \
     --label_col label
 ```
+
+## Datasets and Models
+### Evaluation data
+| Dataset    | Link |
+| -------- | ------- |
+| MTEB Benchmark  | [MTEB](https://huggingface.co/mteb)    |
+| ADE    | [ade_corpus_v2](https://huggingface.co/datasets/ade_corpus_v2) |
+| RCT    | [armanc/pubmed-rct20k](https://huggingface.co/datasets/armanc/pubmed-rct20k) |
+| FPB    | [financial_phrasebank](https://huggingface.co/datasets/financial_phrasebank) |
+| TFNS   | [zeroshot/twitter-financial-news-sentiment](https://huggingface.co/datasets/zeroshot/twitter-financial-news-sentiment) |
+| TFNT   | [zeroshot/twitter-financial-news-topic](https://huggingface.co/datasets/zeroshot/twitter-financial-news-topic) |
+| LED    | [lex_glue](https://huggingface.co/datasets/lex_glue/viewer/ledgar) |
+
+### Pre-trained SEPT Adapter
+The pre-trained adapter for `distilroberta-base` is available [here](https://huggingface.co/yoh/distilroberta-base-sept-adapter) at Huggingface. 
+
 
 ## Citation
 Please use the following citation:
