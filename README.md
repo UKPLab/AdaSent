@@ -1,6 +1,8 @@
 # AdaSent: Efficient Domain-Adapted Sentence Embeddings for Few-Shot Classification
 
-AdaSent is an approach to creating domain-specialized sentence encoders for few-shot sentence classification. It combines Domain-Adaptive Pre-training (DAPT) and Sentence Embedding Pre-Training (SEPT) in a modular fashion. First, it does DAPT on a base pre-trained language model (PLM). Separately, an adapter is trained through general-domain SEPT on the same PLM. The adapter stores the sentence-specialization abilities and can be plugged into domain-adapted PLMs from various domains to make them domain-specialized sentence encoders, on which [SetFit](https://github.com/huggingface/setfit) is carried out to do downstream few-shot classification training.   
+AdaSent is an approach to creating domain-specialized sentence encoders for few-shot sentence classification. It combines Domain-Adaptive Pre-training (DAPT) and Sentence Embedding Pre-Training (SEPT) in a modular fashion. First, it does DAPT on a base pre-trained language model (PLM). Separately, an adapter is trained through general-domain SEPT on the same PLM. The adapter stores the sentence-specialization abilities and can be plugged into domain-adapted PLMs from various domains to make them domain-specialized sentence encoders, on which [SetFit](https://github.com/huggingface/setfit) is carried out to do downstream few-shot classification training. :page_facing_up:[Paper](https://arxiv.org/abs/2311.00408)
+
+<img src="https://github.com/UKPLab/AdaSent/assets/56653470/9b15da03-78ed-48a3-adf0-368305964204.png" width=35% height=35%>
 
 ## Project structure
 ```
