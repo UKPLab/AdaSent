@@ -165,13 +165,24 @@ The pre-trained adapter for `distilroberta-base` is available [here](https://hug
 ## Citation
 Please use the following citation:
 ```bibtex
-@article{huang2023adasent,
- title={AdaSent: Efficient Domain-Adapted Sentence Embeddings for Few-Shot Classification}, 
- author={Yongxin Huang and Kexin Wang and Sourav Dutta and Raj Nath Patel and Goran Glavaš and Iryna Gurevych},
- journal = {ArXiv preprint},
- url = {https://arxiv.org/abs/2311.00408},
- volume = {abs/2311.00408},
- year={2023},
+@inproceedings{huang-etal-2023-adasent,
+    title = "{A}da{S}ent: Efficient Domain-Adapted Sentence Embeddings for Few-Shot Classification",
+    author = "Huang, Yongxin  and
+      Wang, Kexin  and
+      Dutta, Sourav  and
+      Patel, Raj  and
+      Glava{\v{s}}, Goran  and
+      Gurevych, Iryna",
+    editor = "Bouamor, Houda  and
+      Pino, Juan  and
+      Bali, Kalika",
+    booktitle = "Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing",
+    month = dec,
+    year = "2023",
+    address = "Singapore",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2023.emnlp-main.208",
+    pages = "3420--3434",
 }
 ```
 
